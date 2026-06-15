@@ -1,0 +1,16 @@
+N= int(input("Enter number of element:"))
+mat1= []
+T = int(input("Enter search value:"))
+for i in range(N):
+    sub_mat = []
+    for j in range(N):
+        sub_mat.append(int(input()))
+    mat1.append(sub_mat)
+found = 0
+print(mat1)
+for i in range(N):
+    for j in range(N):
+        if T == mat1[i][j]:
+            found = 1
+            break
+print(found)

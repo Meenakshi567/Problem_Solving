@@ -1,0 +1,17 @@
+A - Two Arithmetic Progressions  
+def gcd(a,b):
+  while b!=0:
+    a,b = b, a%b
+  return abs(a)
+T = int(input("Enter"))
+for i in range(T):
+  sum = 0
+  N =int(input())
+  A =int(input())
+  B =int(input())
+  C =int(input()) 
+  D = int(input())
+  for j in range(N):
+    sum += gcd((A*j)+B, (C*j)+D)
+  print(sum)
+

@@ -1,0 +1,20 @@
+import re
+from collections import Counter
+from typing import List
+
+class Solution:
+    def mostCommonWord(self, paragraph: str, banned: List[str]) -> str:
+        # Replace all punctuation characters with a space
+        clean_paragraph = re.sub(r'[^a-zA-Z]', ' ', paragraph).lower()
+        
+        # Split into individual words
+        words = clean_paragraph.split()
+        
+        # Convert banned list to set for O(1) lookups
+        banned_set = set(banned)
+        
+        # Count frequencies of valid words
+        counts = Counter(word for word in words if word not in banned_set)
+        
+        # Return the word with the highest frequency
+        return counts.most_common(1)[0][0]
