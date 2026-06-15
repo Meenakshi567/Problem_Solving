@@ -1,0 +1,81 @@
+B - Two-Powered Sumgive this in python
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    // Optimize standard I/O operations
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    
+    int N;
+    long long P;
+    if (!(cin >> N >> P)) return 0;
+    
+    // Stirling numbers of the second kind
+    vector<vector<long long>> S(N + 1, vector<long long>(N + 1, 0));
+    S[0][0] = 1;
+    for (int i = 1; i <= N; ++i) {
+        for (int j = 1; j <= i; ++j) {
+            S[i][j] = (S[i-1][j-1] + j * S[i-1][j]) % P;
+        }
+    }
+    
+    // Binomial coefficients 
+    vector<vector<long long>> C(N + 1, vector<long long>(N + 1, 0));
+    for (int i = 0; i <= N; ++i) {
+        C[i][0] = 1;
+        for (int j = 1; j <= i; ++j) {
+            C[i][j] = (C[i-1][j-1] + C[i-1][j]) % P;
+        }
+    }
+    
+    // Precompute powers of 2 for fast retrieval: pow_2[d][a] = (2^d)^a % P
+    vector<vector<long long>> pow_2(N + 1, vector<long long>(N + 1, 0));
+    for (int d = 0; d <= N; ++d) {
+        long long temp = 2, p = d, b_val = 1;
+        while (p > 0) {
+            if (p & 1) b_val = (b_val * temp) % P;
+            temp = (temp * temp) % P;
+            p >>= 1;
+        }
+        long long cur = 1;
+        for (int a = 0; a <= N; ++a) {
+            pow_2[d][a] = cur;
+            cur = (cur * b_val) % P;
+        }
+    }
+    
+    // f[n] stores the number of valid positive sequences of length n
+    vector<long long> f(N + 1, 0);
+    f[0] = 1;
+    
+    for (int n = 1; n <= N; ++n) {
+        long long total_n = 0;
+        for (int s = 1; s <= n; ++s) {
+            long long inner_sum = 0;
+            int d = n - s;
+            for (int a = 1; a <= s; ++a) {
+                long long term = (S[s][a] * pow_2[d][a]) % P;
+                if (a % 2 == 0) {
+                    inner_sum = (inner_sum - term + P) % P; // Inclusion-Exclusion
+                } else {
+                    inner_sum = (inner_sum + term) % P;
+                }
+            }
+            long long ways = (f[d] * C[n][s]) % P * inner_sum % P;
+            total_n = (total_n + ways) % P;
+        }
+        f[n] = total_n;
+    }
+    
+    // Final answer incorporates elements remaining 0
+    long long ans = 0;
+    for (int k = 0; k <= N; ++k) {
+        ans = (ans + C[N][k] * f[k]) % P;
+    }
+    
+    cout << ans << "\n";
+    return 0;
+}
